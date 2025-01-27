@@ -3,6 +3,8 @@ import cors from "cors";
 import { Sequelize } from "sequelize";
 import dotenv from "dotenv";
 
+import logger from "./middlewares/logger.js";
+
 dotenv.config();
 
 const initialize = (app) => {
@@ -14,6 +16,7 @@ const initialize = (app) => {
     app.use(cors(corsOptions)); // Enable CORS
     app.use(express.json({ limit: '1mb' })); // Parse JSON bodies
     app.use(express.urlencoded({ limit: '5mb', extended: true })); // Parse URL-encoded bodies
+    app.use(logger); // Log HTTP requests
 
     // Database connection
     const sequelize = new Sequelize(
