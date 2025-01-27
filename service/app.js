@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
-import { Sequelize } from "sequelize";
 import dotenv from "dotenv";
+import db from "./models/index.js";
 
 import logger from "./middlewares/logger.js";
 import secureHeader from "./middlewares/secure-header.js";
@@ -15,32 +15,32 @@ const initialize = (app) => {
 
     // Set up middlewares
     app.use(cors(corsOptions)); // Enable CORS
-    app.use(express.json({ limit: '1mb' })); // Parse JSON bodies
-    app.use(express.urlencoded({ limit: '5mb', extended: true })); // Parse URL-encoded bodies
+    app.use(express.json({ limit: "1mb" })); // Parse JSON bodies
+    app.use(express.urlencoded({ limit: "5mb", extended: true })); // Parse URL-encoded bodies
     app.use(logger); // Log HTTP requests
     app.use(secureHeader); // Apply security headers
 
     // Database connection
-    const sequelize = new Sequelize(
-        process.env.DB_NAME,
-        process.env.DB_USERNAME,
-        process.env.DB_PASSWORD,
-        {
-            host: process.env.DB_HOST,
-            dialect: process.env.DB_DIALECT,
-        }
-    );
-
-    const connectDatabase = async () => {
-        try {
-            await sequelize.authenticate();
+    db.sequelize
+        .authenticate()
+        .then(() => {
             console.log("Database connected successfully.");
-        } catch (error) {
+        })
+        .catch((error) => {
             console.error("Unable to connect to the database:", error);
-        }
-    };
+        });
 
-    connectDatabase();
+    // Sync the database
+    db.sequelize
+        .sync()
+        .then(() => {
+            console.log("Database synchronized successfully.");
+        })
+        .catch((error) => {
+            console.error("Unable to sync the database:", error);
+        });
+
+    
 };
 
 export default initialize;
