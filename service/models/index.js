@@ -1,46 +1,41 @@
-import fs from "fs";
+import { readdirSync } from "fs";
 import path from "path";
-import { Sequelize } from "sequelize";
+import { fileURLToPath } from "url";
+import { Sequelize, DataTypes } from "sequelize";
 import process from "process";
 import dbConfig from "../config/config.js";
 
-const basename = path.basename(__filename);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const env = process.env.NODE_ENV || "development";
 const config = dbConfig[env];
+
 const db = {};
+const sequelize = new Sequelize(config.url, config);
 
-let sequelize;
-if (config.url) {
-    sequelize = new Sequelize(config.url, config);
-} else {
-    sequelize = new Sequelize(
-        config.database,
-        config.username,
-        config.password,
-        config
-    );
-}
-
-fs.readdirSync(__dirname)
-    .filter((file) => {
-        return (
+export default (async () => {
+    const files = readdirSync(__dirname).filter(
+        (file) =>
             file.indexOf(".") !== 0 &&
-            file !== basename &&
+            file !== path.basename(__filename) &&
             file.slice(-3) === ".js"
-        );
-    })
-    .forEach((file) => {
-        const model = sequelize["import"](path.join(__dirname, file));
-        db[model.name] = model;
+    );
+
+    for await (const file of files) {
+        const model = await import(`./${file}`);
+        const namedModel = model.default(sequelize, DataTypes);
+        db[namedModel.name] = namedModel;
+    }
+
+    Object.keys(db).forEach((modelName) => {
+        if (db[modelName].associate) {
+            db[modelName].associate(db);
+        }
     });
 
-Object.keys(db).forEach((modelName) => {
-    if (db[modelName].associate) {
-        db[modelName].associate(db);
-    }
-});
+    db.sequelize = sequelize;
+    db.Sequelize = Sequelize;
 
-db.sequelize = sequelize;
-db.Sequelize = Sequelize;
-
-export default db;
+    return db;
+})();

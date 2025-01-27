@@ -20,26 +20,28 @@ const initialize = (app) => {
     app.use(logger); // Log HTTP requests
     app.use(secureHeader); // Apply security headers
 
-    // Database connection
-    db.sequelize
-        .authenticate()
-        .then(() => {
+    // Set up the database
+    const setupDb = async () => {
+        // Database connection
+        try {
+            const database = await db; // Await the db initialization
+            await database.sequelize.authenticate(); // Authenticate once db is ready
             console.log("Database connected successfully.");
-        })
-        .catch((error) => {
+        } catch (error) {
             console.error("Unable to connect to the database:", error);
-        });
+        }
 
-    // Sync the database
-    db.sequelize
-        .sync()
-        .then(() => {
+        // Sync the database
+        try {
+            const database = await db; // Await the db initialization
+            await database.sequelize.sync(); // Sync once db is ready
             console.log("Database synchronized successfully.");
-        })
-        .catch((error) => {
+        } catch (error) {
             console.error("Unable to sync the database:", error);
-        });
-
+        }
+    };
+    
+    setupDb();
     
 };
 
