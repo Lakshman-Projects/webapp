@@ -4,6 +4,7 @@ import { Sequelize } from "sequelize";
 import dotenv from "dotenv";
 
 import logger from "./middlewares/logger.js";
+import secureHeader from "./middlewares/secure-header.js";
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ const initialize = (app) => {
     app.use(express.json({ limit: '1mb' })); // Parse JSON bodies
     app.use(express.urlencoded({ limit: '5mb', extended: true })); // Parse URL-encoded bodies
     app.use(logger); // Log HTTP requests
+    app.use(secureHeader); // Apply security headers
 
     // Database connection
     const sequelize = new Sequelize(
