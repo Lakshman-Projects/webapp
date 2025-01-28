@@ -24,7 +24,7 @@ const initialize = (app) => {
     const setupDb = async () => {
         // Database connection
         try {
-            const database = await db; // Await the db initialization
+            const database = await db;
             await database.sequelize.authenticate(); // Authenticate once db is ready
             console.log("Database connected successfully.");
         } catch (error) {
@@ -33,7 +33,7 @@ const initialize = (app) => {
 
         // Sync the database
         try {
-            const database = await db; // Await the db initialization
+            const database = await db;
             await database.sequelize.sync(); // Sync once db is ready
             console.log("Database synchronized successfully.");
         } catch (error) {
