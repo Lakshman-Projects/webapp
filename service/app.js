@@ -4,6 +4,7 @@ import db from "./models/index.js";
 
 import logger from "./middlewares/logger.js";
 import initializeRouters from "./routers/index.js";
+import headers from "./middlewares/header.js";
 
 dotenv.config();
 
@@ -12,6 +13,7 @@ const initialize = (app) => {
     app.use(express.json({ limit: "1mb" })); // Parse JSON bodies
     app.use(express.urlencoded({ limit: "5mb", extended: true })); // Parse URL-encoded bodies
     app.use(logger); // Log HTTP requests
+    app.use(headers); // Set headers
 
     // Set up the database
     const setupDb = async () => {
