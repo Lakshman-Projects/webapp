@@ -5,6 +5,7 @@ import db from "./models/index.js";
 
 import logger from "./middlewares/logger.js";
 import secureHeader from "./middlewares/secure-header.js";
+import initializeRouters from "./routers/index.js";
 
 dotenv.config();
 
@@ -39,6 +40,9 @@ const initialize = (app) => {
         } catch (error) {
             console.error("Unable to sync the database:", error);
         }
+
+        // Initialize the routers
+        initializeRouters(app);
     };
     
     setupDb();

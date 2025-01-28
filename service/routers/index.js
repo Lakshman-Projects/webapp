@@ -1,7 +1,7 @@
-import loginRouter from "./login-router.js";
+import healthzRouter from "./healthz-router.js";
 
 const initializeRouters = (app) => {
-    app.use("/healthz", loginRouter);
+    app.use("/healthz", healthzRouter);
 };
 
 export default initializeRouters;
