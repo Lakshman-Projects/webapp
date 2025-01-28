@@ -5,8 +5,8 @@ export const getAppHealthz = async (req, res) => {
         // Try adding entry to the health_checks table
         await createHealthCheck();
 
-        res.status(200).send('OK');
+        res.status(200).send();
     } catch (error) {
-        res.status(503);
+        res.status(503).send();
     }
 };
