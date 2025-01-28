@@ -34,13 +34,12 @@ const initialize = (app) => {
         } catch (error) {
             console.error("Unable to sync the database:", error);
         }
-
-        // Initialize the routers
-        initializeRouters(app);
     };
     
     setupDb();
-    
+
+    // Initialize the routers
+    initializeRouters(app);
 };
 
 export default initialize;

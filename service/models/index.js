@@ -14,15 +14,15 @@ const config = dbConfig[env];
 const db = {};
 const sequelize = new Sequelize(config.url, config);
 
-export default (async () => {
-    const files = readdirSync(__dirname).filter(
-        (file) =>
-            file.indexOf(".") !== 0 &&
-            file !== path.basename(__filename) &&
-            file.slice(-3) === ".js"
-    );
+const files = readdirSync(__dirname).filter(
+    (file) =>
+        file.indexOf(".") !== 0 &&
+        file !== path.basename(__filename) &&
+        file.slice(-3) === ".js"
+);
 
-    for await (const file of files) {
+const importModels = async () => {
+    for (const file of files) {
         const model = await import(`./${file}`);
         const namedModel = model.default(sequelize, DataTypes);
         db[namedModel.name] = namedModel;
@@ -38,4 +38,6 @@ export default (async () => {
     db.Sequelize = Sequelize;
 
     return db;
-})();
+};
+
+export default importModels();
