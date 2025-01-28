@@ -1,41 +1,48 @@
 import express from "express";
-import cors from "cors";
-import { Sequelize } from "sequelize";
 import dotenv from "dotenv";
+import db from "./models/index.js";
+
+import logger from "./middlewares/logger.js";
+import initializeRouters from "./routers/index.js";
+import headers from "./middlewares/header.js";
+import { apiMiddleware, errorHandler } from "./middlewares/responseHandler.js";
 
 dotenv.config();
 
 const initialize = (app) => {
-    const corsOptions = {
-        methods: process.env.CORS_METHODS,
-    };
-
     // Set up middlewares
-    app.use(cors(corsOptions)); // Enable CORS
-    app.use(express.json({ limit: '1mb' })); // Parse JSON bodies
-    app.use(express.urlencoded({ limit: '5mb', extended: true })); // Parse URL-encoded bodies
+    app.use(express.json({ limit: "1mb" })); // Parse JSON bodies
+    app.use(express.urlencoded({ limit: "5mb", extended: true })); // Parse URL-encoded bodies
+    app.use(logger); // Log HTTP requests
+    app.use(headers); // Set headers
+    app.use(apiMiddleware); // API middleware
+    app.use(errorHandler); // Error handler
 
-    // Database connection
-    const sequelize = new Sequelize(
-        process.env.DB_NAME,
-        process.env.DB_USERNAME,
-        process.env.DB_PASSWORD,
-        {
-            host: process.env.DB_HOST,
-            dialect: process.env.DB_DIALECT,
-        }
-    );
-
-    const connectDatabase = async () => {
+    // Set up the database
+    const setupDb = async () => {
+        // Database connection
         try {
-            await sequelize.authenticate();
+            const database = await db;
+            await database.sequelize.authenticate(); // Authenticate once db is ready
             console.log("Database connected successfully.");
         } catch (error) {
             console.error("Unable to connect to the database:", error);
         }
-    };
 
-    connectDatabase();
+        // Sync the database
+        try {
+            const database = await db;
+            await database.sequelize.sync(); // Sync once db is ready
+            console.log("Database synchronized successfully.");
+        } catch (error) {
+            console.error("Unable to sync the database:", error);
+        }
+    };
+    
+    setupDb();
+
+    // Initialize the routers
+    initializeRouters(app);
 };
 
 export default initialize;
