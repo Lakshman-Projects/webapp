@@ -5,7 +5,7 @@ import initialize from "./service/app.js";
 dotenv.config();
 const app = express();
 
-const port = process.env.PORT;
+const port = process.env.PORT || 8080;
 initialize(app);
 
 app.listen(port, () => {

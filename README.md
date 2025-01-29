@@ -11,6 +11,7 @@ This project is a simple web application designed to implement a health check AP
 - **Resilience**: Handles database unavailability gracefully.
 - **Caching Control**: Ensures no caching via HTTP headers.
 - **HTTP Methods**: Restricts `/healthz` to GET requests only.
+- **Payload Restriction**: Ensures no request payloads are allowed.
 
 ---
 
@@ -26,7 +27,7 @@ Ensure the following are installed on your system:
 
 ### Clone the Repository
 ```bash
-# Replace <your-username> with your GitHub username
+
 git clone https://github.com/Lakshman-Siva/webapp-fork.git
 cd webapp
 ```
@@ -39,26 +40,18 @@ npm install
 ### Configure the Database
 1. Update the `.env` file with your PostgreSQL credentials:
    ```env
-   DB_USERNAME=<your_username>
-   DB_PASSWORD=<your_password>
-   DB_NAME=webapp
-   DB_HOST=127.0.0.1
-   DB_DIALECT=postgres
+   DATABASE_URL=postgres://<db_user>:<db_password>@127.0.0.1:5432/<db>
+   DEV_DATABASE_URL=postgres://<db_user>:<db_password>@127.0.0.1:5432/<dev_db>
+   TEST_DATABASE_URL=postgres://<db_user>:<db_password>@127.0.0.1:5432/<test_db>
+
    ```
-2. Create the database:
-   ```bash
-   npx sequelize-cli db:create
-   ```
-3. Run migrations:
-   ```bash
-   npx sequelize-cli db:migrate
-   ```
+2. Create the databases manually in PostgreSQL using the provided URLs. The application will automatically sync all the tables when started (no migrate or create command is required).
 
 ### Run the Application
 ```bash
 npm start
 ```
-The application will run at `http://localhost:3000`.
+The application will run at `http://localhost:8080`.
 
 
 ## API Endpoint
@@ -96,6 +89,10 @@ curl -X POST http://localhost:8080/healthz -i
 # Non-Empty Body (Bad Request)
 curl -X GET http://localhost:8080/healthz -d '{"key":"value"}' -i
 ```
+### API collection
+For testing purposes, a [Bruno Healthz Collection](https://github.com/Lakshman-Siva/webapp-fork/tree/main/docs/bruno/Healthz)
+ is included in the docs folder. Use it to test the API endpoints.
+
 ---
 
 ## Database Model
@@ -104,7 +101,7 @@ Below is the database schema represented using Mermaid:
 ```mermaid
 erDiagram
     HealthCheck {
-        int id PK
+        checkid int PK
         datetime timestamp
     }
 ```
