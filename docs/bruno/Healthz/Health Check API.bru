@@ -1,0 +1,29 @@
+meta {
+  name: Health Check API
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:3000/healthz
+  body: text
+  auth: none
+}
+
+body:json {
+  <note>
+      <to>Alice</to>
+      <from>Bob</from>
+      <heading>Reminder</heading>
+      <body>Don't forget our meeting at 3 PM today!</body>
+  </note>
+}
+
+body:xml {
+  <note>
+      <to>Alice</to>
+      <from>Bob</from>
+      <heading>Reminder</heading>
+      <body>Don't forget our meeting at 3 PM today!</body>
+  </note>
+}
