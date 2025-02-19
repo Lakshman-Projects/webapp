@@ -16,10 +16,11 @@ APP_GROUP="$6"
 APP_USER="$7"
 
 # Other Variables
-APP_ZIP="/home/lakshman_siva_*.zip"
+APP_ZIP="/tmp/lakshman_siva_*.zip"
 APP_DIR="/opt/csye6225"
-FILE_TO_MOVE="/home/.env"
+FILE_TO_MOVE="/tmp/.env"
 EXTRACTED_APP_PATH="$APP_DIR/lakshman_siva_*/webapp"
+EXTRACTED_APP_PATH_ALT="$APP_DIR/webapp"
 
 # Update package lists and upgrade packages
 echo "Updating package lists and upgrading packages..."
@@ -69,7 +70,10 @@ sudo unzip "$APP_ZIP" -d "$APP_DIR"
 
 # Move a specific file from /tmp/ to the extracted application directory
 echo "Moving $FILE_TO_MOVE to $EXTRACTED_APP_PATH..."
-sudo mv "$FILE_TO_MOVE" $EXTRACTED_APP_PATH
+sudo mv "$FILE_TO_MOVE" $EXTRACTED_APP_PATH || sudo mv "$FILE_TO_MOVE" $EXTRACTED_APP_PATH_ALT || { 
+    echo "Failed to move $FILE_TO_MOVE to $EXTRACTED_APP_PATH or $EXTRACTED_APP_PATH_ALT"; 
+    exit 1; 
+}
 
 # Update permissions of the folder and artifacts
 echo "Updating permissions for $APP_DIR..."
@@ -83,7 +87,10 @@ sudo apt-get install -y nodejs npm
 # Navigate to the extracted application directory and run npm install and npm start
 echo "Running npm install and npm start in $EXTRACTED_APP_PATH..."
 cd && cd ..
-cd $EXTRACTED_APP_PATH || { echo "Failed to navigate to $EXTRACTED_APP_PATH"; exit 1; }
+cd $EXTRACTED_APP_PATH || cd $EXTRACTED_APP_PATH_ALT || { 
+    echo "Failed to navigate to $EXTRACTED_APP_PATH or $EXTRACTED_APP_PATH_ALT"; 
+    exit 1; 
+}
 sudo -u $APP_USER npm install
 
 echo "Dev environment & dependencies setup completed!"

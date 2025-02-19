@@ -9,7 +9,7 @@ import { apiMiddleware, errorHandler } from "./middlewares/responseHandler.js";
 
 dotenv.config();
 
-const initialize = (app) => {
+const initialize = async (app) => {
     // Set up middlewares
     app.use(express.json({ limit: "1mb" })); // Parse JSON bodies
     app.use(express.urlencoded({ limit: "5mb", extended: true })); // Parse URL-encoded bodies
@@ -39,7 +39,7 @@ const initialize = (app) => {
         }
     };
     
-    setupDb();
+    await setupDb();
 
     // Initialize the routers
     initializeRouters(app);

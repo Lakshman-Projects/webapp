@@ -18,6 +18,7 @@ jobs:
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
       APP_GROUP: ${{ secrets.APP_GROUP }}
       APP_USER: ${{ secrets.APP_USER }}
+      ENV_FILE_CONTENT: ${{ secrets.ENV_FILE_CONTENT }}
 
     steps:
       - name: Checkout code
@@ -26,19 +27,22 @@ jobs:
       - name: Zip the repo
         run: |
           cd ..
-          zip -r /home/lakshman_siva_repo.zip "$(basename "$GITHUB_WORKSPACE")"
+          zip -r /tmp/lakshman_siva_repo.zip "$(basename "$GITHUB_WORKSPACE")"
 
       - name: Create .env File
-        run: echo "${{ secrets.ENV_FILE_CONTENT }}" > /home/.env
+        run: echo "$ENV_FILE_CONTENT" >> /tmp/.env
 
       - name: Remove carriage returns from setup.sh
         run: sed -i 's/\r$//' setup.sh
 
       - name: Run Setup Script
         run: |
-          sudo sh setup.sh \
+          sudo -E sh setup.sh \
             "$DB_NAME" "$DEV_DB_NAME" "$TEST_DB_NAME" \
             "$DB_USER" "$DB_PASSWORD" "$APP_GROUP" "$APP_USER"
 
-      - name: Run Tests
-        run: npm test
+      - name: Navigate to webapp directory and Run Tests
+        run: |
+          cd && cd ..
+          cd /opt/csye6225/webapp || { echo "Webapp directory not found"; exit 1; }
+          sudo -u $APP_USER npm test
