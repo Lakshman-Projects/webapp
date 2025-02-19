@@ -10,15 +10,6 @@ jobs:
     name: Setup WebApp and Run Tests
     runs-on: ubuntu-latest
 
-    env:
-      DB_NAME: ${{ secrets.DB_NAME }}
-      DEV_DB_NAME: ${{ secrets.DEV_DB_NAME }}
-      TEST_DB_NAME: ${{ secrets.TEST_DB_NAME }}
-      DB_USER: ${{ secrets.DB_USER }}
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      APP_GROUP: ${{ secrets.APP_GROUP }}
-      APP_USER: ${{ secrets.APP_USER }}
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -36,9 +27,8 @@ jobs:
 
       - name: Run Setup Script
         run: |
-          sudo -E sh setup.sh \
-            "$DB_NAME" "$DEV_DB_NAME" "$TEST_DB_NAME" \
-            "$DB_USER" "$DB_PASSWORD" "$APP_GROUP" "$APP_USER"
+          sudo sh setup.sh "${{ secrets.DB_NAME }}" "${{ secrets.DEV_DB_NAME }}" "${{ secrets.TEST_DB_NAME }}" \
+          "${{ secrets.DB_USER }}" "${{ secrets.DB_PASSWORD }}" "${{ secrets.APP_GROUP }}" "${{ secrets.APP_USER }}"
 
       - name: Run Tests
         run: npm test
