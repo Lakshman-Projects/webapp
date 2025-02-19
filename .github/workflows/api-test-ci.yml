@@ -47,4 +47,5 @@ jobs:
         run: |
           cd && cd ..
           cd /opt/csye6225/webapp || { echo "Webapp directory not found"; exit 1; }
+          cat .env
           npm test
