@@ -22,7 +22,7 @@ FILE_TO_MOVE="/tmp/.env"
 EXTRACTED_APP_PATH="$APP_DIR/lakshman_siva_*/webapp"
 EXTRACTED_APP_PATH_ALT="$APP_DIR/webapp"
 
-# Update package lists and upgrade packages
+# Update package lists
 echo "Updating package lists and upgrading packages..."
 sudo apt-get update -y
 sudo apt-get install -y unzip
