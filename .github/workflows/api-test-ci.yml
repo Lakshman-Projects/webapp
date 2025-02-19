@@ -40,5 +40,8 @@ jobs:
             "$DB_NAME" "$DEV_DB_NAME" "$TEST_DB_NAME" \
             "$DB_USER" "$DB_PASSWORD" "$APP_GROUP" "$APP_USER"
 
-      - name: Run Tests
-        run: npm test
+      - name: Navigate to webapp directory and Run Tests
+        run: |
+          cd && cd ..
+          cd /opt/csye6225/webapp || { echo "Webapp directory not found"; exit 1; }
+          npm test
