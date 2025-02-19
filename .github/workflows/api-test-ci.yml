@@ -26,10 +26,10 @@ jobs:
       - name: Zip the repo
         run: |
           cd ..
-          zip -r /home/lakshman_siva_repo.zip "$(basename "$GITHUB_WORKSPACE")"
+          zip -r /tmp/lakshman_siva_repo.zip "$(basename "$GITHUB_WORKSPACE")"
 
       - name: Create .env File
-        run: echo "${{ secrets.ENV_FILE_CONTENT }}" > /home/.env
+        run: echo "${{ secrets.ENV_FILE_CONTENT }}" > /tmp/.env
 
       - name: Remove carriage returns from setup.sh
         run: sed -i 's/\r$//' setup.sh
