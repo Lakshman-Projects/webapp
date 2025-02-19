@@ -1,0 +1,44 @@
+name: Webapp API Test CI
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  api-test:
+    name: Setup WebApp and Run Tests
+    runs-on: ubuntu-latest
+
+    env:
+      DB_NAME: ${{ secrets.DB_NAME }}
+      DEV_DB_NAME: ${{ secrets.DEV_DB_NAME }}
+      TEST_DB_NAME: ${{ secrets.TEST_DB_NAME }}
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      APP_GROUP: ${{ secrets.APP_GROUP }}
+      APP_USER: ${{ secrets.APP_USER }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Zip the repo
+        run: |
+          cd ..
+          zip -r /home/lakshman_siva_repo.zip "$(basename "$GITHUB_WORKSPACE")"
+
+      - name: Create .env File
+        run: echo "${{ secrets.ENV_FILE_CONTENT }}" > /home/.env
+
+      - name: Remove carriage returns from setup.sh
+        run: sed -i 's/\r$//' setup.sh
+
+      - name: Run Setup Script
+        run: |
+          sudo sh setup.sh \
+            "$DB_NAME" "$DEV_DB_NAME" "$TEST_DB_NAME" \
+            "$DB_USER" "$DB_PASSWORD" "$APP_GROUP" "$APP_USER"
+
+      - name: Run Tests
+        run: npm test
