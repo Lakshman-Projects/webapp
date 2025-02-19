@@ -11,7 +11,7 @@ This project is a simple web application designed to implement a health check AP
 - **Resilience**: Handles database unavailability gracefully.
 - **Caching Control**: Ensures no caching via HTTP headers.
 - **HTTP Methods**: Restricts `/healthz` to GET requests only.
-- **Payload Restriction**: Ensures no request payloads are allowed.
+- **Payload Restriction**: Ensures no request payloads are allowed for `/healthz`.
 
 ---
 
