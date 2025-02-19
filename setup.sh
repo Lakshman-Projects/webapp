@@ -70,7 +70,10 @@ sudo unzip "$APP_ZIP" -d "$APP_DIR"
 
 # Move a specific file from /tmp/ to the extracted application directory
 echo "Moving $FILE_TO_MOVE to $EXTRACTED_APP_PATH..."
-sudo mv "$FILE_TO_MOVE" $EXTRACTED_APP_PATH
+sudo mv "$FILE_TO_MOVE" $EXTRACTED_APP_PATH || sudo mv "$FILE_TO_MOVE" $EXTRACTED_APP_PATH_ALT || { 
+    echo "Failed to move $FILE_TO_MOVE to $EXTRACTED_APP_PATH or $EXTRACTED_APP_PATH_ALT"; 
+    exit 1; 
+}
 
 # Update permissions of the folder and artifacts
 echo "Updating permissions for $APP_DIR..."
@@ -84,7 +87,7 @@ sudo apt-get install -y nodejs npm
 # Navigate to the extracted application directory and run npm install and npm start
 echo "Running npm install and npm start in $EXTRACTED_APP_PATH..."
 cd && cd ..
-cd "$EXTRACTED_APP_PATH" || cd "$EXTRACTED_APP_PATH_ALT" || { 
+cd $EXTRACTED_APP_PATH || cd $EXTRACTED_APP_PATH_ALT || { 
     echo "Failed to navigate to $EXTRACTED_APP_PATH or $EXTRACTED_APP_PATH_ALT"; 
     exit 1; 
 }
