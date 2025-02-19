@@ -16,9 +16,9 @@ APP_GROUP="$6"
 APP_USER="$7"
 
 # Other Variables
-APP_ZIP="/home/lakshman_siva_*.zip"
+APP_ZIP="/tmp/lakshman_siva_*.zip"
 APP_DIR="/opt/csye6225"
-FILE_TO_MOVE="/home/.env"
+FILE_TO_MOVE="/tmp/.env"
 EXTRACTED_APP_PATH="$APP_DIR/lakshman_siva_*/webapp"
 
 # Update package lists and upgrade packages
