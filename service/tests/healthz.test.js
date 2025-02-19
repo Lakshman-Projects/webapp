@@ -5,7 +5,7 @@ import initialize from "../app.js";
 
 beforeAll(async () => {
     app = express();
-    initialize(app);
+    await initialize(app);
 });
 
 describe('GET /healthz', () => {

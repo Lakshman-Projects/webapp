@@ -10,9 +10,7 @@ const __dirname = path.dirname(__filename);
 
 const env = process.env.NODE_ENV || "development";
 const config = dbConfig[env];
-console.log(config);
-console.log(env);
-console.log(dbConfig);
+
 const db = {};
 const sequelize = new Sequelize(config.url, config);
 
