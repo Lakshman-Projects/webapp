@@ -47,6 +47,9 @@ jobs:
           cd /opt/csye6225/webapp || { echo "Webapp directory not found"; exit 1; }
           sudo -u $APP_USER npm test
 
+      - name: Create .env File
+        run: echo "$ENV_FILE_CONTENT" >> /tmp/.env
+
       - name: Set up Packer
         uses: hashicorp/setup-packer@v2
         with:
