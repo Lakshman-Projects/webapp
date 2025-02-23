@@ -57,7 +57,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ var.AWS_REGION }}
+          aws-region: ${{ vars.AWS_REGION }}
 
       - name: Initialize Packer
         run: packer init packer/machine-image.pkr.hcl
@@ -65,13 +65,13 @@ jobs:
       - name: Build Image with Secrets
         run: |
           packer build \
-            -var "aws_profile=${{ var.AWS_PROFILE }}" \
-            -var "aws_region=${{ var.AWS_REGION }}" \
-            -var "ami_regions=${{ var.AMI_REGIONS }}" \
-            -var "ssh_username=${{ var.SSH_USERNAME }}" \
-            -var "subnet_id=${{ var.SUBNET_ID }}" \
-            -var "instance_type=${{ var.INSTANCE_TYPE }}" \
-            -var "demo_account_id=${{ var.DEMO_ACCOUNT_ID }}" \
+            -var "aws_profile=${{ vars.AWS_PROFILE }}" \
+            -var "aws_region=${{ vars.AWS_REGION }}" \
+            -var "ami_regions=${{ vars.AMI_REGIONS }}" \
+            -var "ssh_username=${{ vars.SSH_USERNAME }}" \
+            -var "subnet_id=${{ vars.SUBNET_ID }}" \
+            -var "instance_type=${{ vars.INSTANCE_TYPE }}" \
+            -var "demo_account_id=${{ vars.DEMO_ACCOUNT_ID }}" \
             -var "db_name=${{ secrets.DB_NAME }}" \
             -var "dev_db_name=${{ secrets.DEV_DB_NAME }}" \
             -var "test_db_name=${{ secrets.TEST_DB_NAME }}" \
