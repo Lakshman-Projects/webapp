@@ -82,7 +82,6 @@ source "amazon-ebs" "my-aws-machine-image" {
   region          = var.aws_region
   ami_name        = "csye6225-{{timestamp}}"
   ami_description = "Custom Ubuntu 24.04 LTS AMI for CSYE6225 with pre-installed dependencies and optimized configurations."
-  ami_regions     = var.ami_regions
   ami_users       = [var.demo_account_id]
 
   source_ami_filter {
