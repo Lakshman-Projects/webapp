@@ -67,7 +67,6 @@ jobs:
           packer build \
             -var "aws_profile=${{ vars.AWS_PROFILE }}" \
             -var "aws_region=${{ vars.AWS_REGION }}" \
-            -var "ami_regions=${{ vars.AMI_REGIONS }}" \
             -var "ssh_username=${{ vars.SSH_USERNAME }}" \
             -var "subnet_id=${{ vars.SUBNET_ID }}" \
             -var "instance_type=${{ vars.INSTANCE_TYPE }}" \
