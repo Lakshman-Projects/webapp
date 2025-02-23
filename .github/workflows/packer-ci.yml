@@ -26,6 +26,9 @@ jobs:
         cd ..
         zip -r /tmp/lakshman_siva_repo.zip "$(basename "$GITHUB_WORKSPACE")"
 
+    - name: Initialize Packer
+      run: packer init ./packer/machine-image.pkr.hcl
+
     - name: Create temp .env file
       run: echo "ENV FILE" >> /tmp/.env
 
