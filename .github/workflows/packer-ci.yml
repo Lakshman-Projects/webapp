@@ -1,0 +1,41 @@
+name: Packer CI for Pull Requests
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '**/*.pkr.hcl'
+
+jobs:
+  packer-checks:
+    name: Packer Checks
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Packer
+      uses: hashicorp/setup-packer@v2
+      with:
+        version: 'latest'
+
+    - name: Create temp zip file
+      run: |
+        cd ..
+        zip -r /tmp/lakshman_siva_repo.zip "$(basename "$GITHUB_WORKSPACE")"
+
+    - name: Initialize Packer
+      run: packer init ./packer/machine-image.pkr.hcl
+
+    - name: Create temp .env file
+      run: echo "ENV FILE" >> /tmp/.env
+
+    - name: Run `packer fmt`
+      run: |
+        packer fmt -check ./packer/machine-image.pkr.hcl
+
+    - name: Run `packer validate`
+      run: |
+        packer validate ./packer/machine-image.pkr.hcl
