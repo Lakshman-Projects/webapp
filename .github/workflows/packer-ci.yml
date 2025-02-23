@@ -21,6 +21,14 @@ jobs:
       with:
         version: 'latest'
 
+    - name: Create temp zip file
+      run: |
+        cd ..
+        zip -r /tmp/lakshman_siva_repo.zip "$(basename "$GITHUB_WORKSPACE")"
+
+    - name: Create temp .env file
+      run: echo "ENV FILE" >> /tmp/.env
+
     - name: Run `packer fmt`
       run: |
         packer fmt -check ./packer/machine-image.pkr.hcl
