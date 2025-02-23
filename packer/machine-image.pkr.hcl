@@ -42,11 +42,46 @@ variable "demo_account_id" {
   default = "xxxxxxxxxxxx"
 }
 
+variable "db_name" {
+  type    = string
+  default = "application_db"
+}
+
+variable "dev_db_name" {
+  type    = string
+  default = "application_db_dev"
+}
+
+variable "test_db_name" {
+  type    = string
+  default = "application_db_test"
+}
+
+variable "db_user" {
+  type    = string
+  default = "admin_user"
+}
+
+variable "db_password" {
+  type    = string
+  default = "StrongPassword!@#456"
+}
+
+variable "app_group" {
+  type    = string
+  default = "app_services"
+}
+
+variable "app_user" {
+  type    = string
+  default = "service_account"
+}
+
 source "amazon-ebs" "my-aws-machine-image" {
   profile         = var.aws_profile
   region          = var.aws_region
   ami_name        = "csye6225-{{timestamp}}"
-  ami_description = "AMI for CSYE6225"
+  ami_description = "Custom Ubuntu 24.04 LTS AMI for CSYE6225 with pre-installed dependencies and optimized configurations."
   ami_regions     = var.ami_regions
   ami_users       = [var.demo_account_id]
 
@@ -76,4 +111,33 @@ build {
   sources = [
     "source.amazon-ebs.my-aws-machine-image"
   ]
+
+  provisioner "file" {
+    source      = "/tmp/lakshman_siva_repo.zip"
+    destination = "/tmp/lakshman_siva_repo.zip"
+  }
+
+  provisioner "file" {
+    source      = "/tmp/.env"
+    destination = "/tmp/.env"
+  }
+
+  provisioner "file" {
+    source      = "setup.sh"
+    destination = "/tmp/setup.sh"
+  }
+
+  provisioner "file" {
+    source      = "packer/app.service"
+    destination = "/tmp/app.service"
+  }
+
+  provisioner "shell" {
+    inline = [
+      "sed -i 's/\r$//' /tmp/setup.sh",
+      "sudo sh /tmp/setup.sh ${var.db_name} ${var.dev_db_name} ${var.test_db_name} ${var.db_user} ${var.db_password} ${var.app_group} ${var.app_user}", "sudo mv /tmp/app.service /etc/systemd/system/app.service",
+      "sudo systemctl enable app.service",
+      "sudo systemctl start app.service",
+    ]
+  }
 }
