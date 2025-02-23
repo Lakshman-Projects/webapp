@@ -4,9 +4,6 @@ on:
   pull_request:
     branches:
       - main
-    paths:
-      - '**/*.js'
-      - 'package*.json'
 
 jobs:
   api-test:
