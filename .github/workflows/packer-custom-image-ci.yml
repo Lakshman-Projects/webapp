@@ -1,0 +1,82 @@
+name: Build Custom Image using Packer and Deploy to AWS & GCP
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  packer-build:
+    name: Packer Build
+    runs-on: ubuntu-latest
+
+    env:
+      DB_NAME: ${{ secrets.DB_NAME }}
+      DEV_DB_NAME: ${{ secrets.DEV_DB_NAME }}
+      TEST_DB_NAME: ${{ secrets.TEST_DB_NAME }}
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      APP_GROUP: ${{ secrets.APP_GROUP }}
+      APP_USER: ${{ secrets.APP_USER }}
+      ENV_FILE_CONTENT: ${{ secrets.ENV_FILE_CONTENT }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Zip the repo
+        run: |
+          cd ..
+          zip -r /tmp/lakshman_siva_repo.zip "$(basename "$GITHUB_WORKSPACE")"
+
+      - name: Create .env File
+        run: echo "$ENV_FILE_CONTENT" >> /tmp/.env
+
+      - name: Remove carriage returns from setup.sh
+        run: sed -i 's/\r$//' setup.sh
+
+      - name: Run Setup Script
+        run: |
+          sudo -E sh setup.sh \
+            "$DB_NAME" "$DEV_DB_NAME" "$TEST_DB_NAME" \
+            "$DB_USER" "$DB_PASSWORD" "$APP_GROUP" "$APP_USER"
+
+      - name: Navigate to webapp directory and Run Tests
+        run: |
+          cd && cd ..
+          cd /opt/csye6225/webapp || { echo "Webapp directory not found"; exit 1; }
+          sudo -u $APP_USER npm test
+
+      - name: Set up Packer
+        uses: hashicorp/setup-packer@v2
+        with:
+          version: 'latest'
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4.1.0
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ var.AWS_REGION }}
+
+      - name: Initialize Packer
+        run: packer init packer/machine-image.pkr.hcl
+
+      - name: Build Image with Secrets
+        run: |
+          packer build \
+            -var "aws_profile=${{ var.AWS_PROFILE }}" \
+            -var "aws_region=${{ var.AWS_REGION }}" \
+            -var "ami_regions=${{ var.AMI_REGIONS }}" \
+            -var "ssh_username=${{ var.SSH_USERNAME }}" \
+            -var "subnet_id=${{ var.SUBNET_ID }}" \
+            -var "instance_type=${{ var.INSTANCE_TYPE }}" \
+            -var "demo_account_id=${{ var.DEMO_ACCOUNT_ID }}" \
+            -var "db_name=${{ secrets.DB_NAME }}" \
+            -var "dev_db_name=${{ secrets.DEV_DB_NAME }}" \
+            -var "test_db_name=${{ secrets.TEST_DB_NAME }}" \
+            -var "db_user=${{ secrets.DB_USER }}" \
+            -var "db_password=${{ secrets.DB_PASSWORD }}" \
+            -var "app_group=${{ secrets.APP_GROUP }}" \
+            -var "app_user=${{ secrets.APP_USER }}" \
+            packer/machine-image.pkr.hcl
