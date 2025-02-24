@@ -4,6 +4,10 @@ packer {
       version = ">= 1.0.0, < 2.0.0"
       source  = "github.com/hashicorp/amazon"
     }
+    googlecompute = {
+      version = ">= 1.0.0, < 2.0.0"
+      source  = "github.com/hashicorp/googlecompute"
+    }
   }
 }
 
@@ -40,6 +44,51 @@ variable "instance_type" {
 variable "demo_account_id" {
   type    = string
   default = "xxxxxxxxxxxx"
+}
+
+variable "gcp_project_id" {
+  type    = string
+  default = "xxxxxx"
+}
+
+variable "machine_type" {
+  type    = string
+  default = "n1-standard-1"
+}
+
+variable "gcp_zone" {
+  type    = string
+  default = "us-east1-d"
+}
+
+variable "disk_size" {
+  type    = number
+  default = 10
+}
+
+variable "disk_type" {
+  type    = string
+  default = "pd-standard"
+}
+
+variable "gcp_network" {
+  type    = string
+  default = "default"
+}
+
+variable "gcp_source_image" {
+  type    = string
+  default = "ubuntu-2404-noble-amd64-v20250214"
+}
+
+variable "gcp_source_image_family" {
+  type    = string
+  default = "ubuntu-2404-noble-amd64"
+}
+
+variable "credentials_file" {
+  type    = string
+  default = "/tmp/credentials.json"
 }
 
 variable "db_name" {
@@ -106,9 +155,30 @@ source "amazon-ebs" "my-aws-machine-image" {
   }
 }
 
+source "googlecompute" "my-gcp-machine-image" {
+  project_id          = var.gcp_project_id
+  credentials_file    = var.credentials_file
+  source_image        = var.gcp_source_image
+  source_image_family = var.gcp_source_image_family
+  zone                = var.gcp_zone
+
+  image_project_id        = var.gcp_project_id
+  image_name              = "csye6225-{{timestamp}}"
+  image_description       = "Custom Ubuntu 24.04 LTS Image for CSYE6225 with pre-installed dependencies and optimized configurations."
+  image_storage_locations = ["us"]
+
+  machine_type = var.machine_type
+  disk_size    = var.disk_size
+  disk_type    = var.disk_type
+  network      = var.gcp_network
+  ssh_username = var.ssh_username
+  tags         = ["csye6225", "custom-image"]
+}
+
 build {
   sources = [
-    "source.amazon-ebs.my-aws-machine-image"
+    "source.amazon-ebs.my-aws-machine-image",
+    "source.googlecompute.my-gcp-machine-image",
   ]
 
   provisioner "file" {
@@ -134,7 +204,9 @@ build {
   provisioner "shell" {
     inline = [
       "sed -i 's/\r$//' /tmp/setup.sh",
-      "sudo sh /tmp/setup.sh ${var.db_name} ${var.dev_db_name} ${var.test_db_name} ${var.db_user} ${var.db_password} ${var.app_group} ${var.app_user}", "sudo mv /tmp/app.service /etc/systemd/system/app.service",
+      "sudo sh /tmp/setup.sh ${var.db_name} ${var.dev_db_name} ${var.test_db_name} ${var.db_user} ${var.db_password} ${var.app_group} ${var.app_user}", 
+      "sudo mv /tmp/app.service /etc/systemd/system/app.service",
+      "sudo systemctl daemon-reload",
       "sudo systemctl enable app.service",
       "sudo systemctl start app.service",
     ]
