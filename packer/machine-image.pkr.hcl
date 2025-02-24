@@ -21,11 +21,6 @@ variable "aws_region" {
   default = "us-east-1"
 }
 
-variable "ami_regions" {
-  type    = list(string)
-  default = ["us-east-1"]
-}
-
 variable "ssh_username" {
   type    = string
   default = "ubuntu"
