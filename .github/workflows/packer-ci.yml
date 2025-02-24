@@ -12,6 +12,9 @@ jobs:
     name: Packer Checks
     runs-on: ubuntu-latest
 
+    env:
+      GCP_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -30,7 +33,7 @@ jobs:
       run: echo "ENV FILE" >> /tmp/.env
 
     - name: Create temp credentials file
-      run: echo "{}" >> /tmp/credentials.json
+      run: echo "$GCP_CREDENTIALS" >> /tmp/credentials.json
 
     - name: Initialize Packer
       run: packer init ./packer/machine-image.pkr.hcl
