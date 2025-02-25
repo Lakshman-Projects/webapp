@@ -60,7 +60,7 @@ sudo groupadd $APP_GROUP
 
 # Create a new user for the application
 echo "Creating user $APP_USER..."
-sudo useradd -m -s /bin/bash -g $APP_GROUP $APP_USER
+sudo useradd -m -s /usr/sbin/nologin -g $APP_GROUP $APP_USER
 
 # Unzip the application to /opt/csye6225
 echo "Unzipping application to $APP_DIR..."
