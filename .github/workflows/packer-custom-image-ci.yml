@@ -1,9 +1,11 @@
 name: Build Custom Image using Packer and Deploy to AWS & GCP
 
 on:
-  push:
+  pull_request:
     branches:
       - main
+    types:
+      - closed
 
 jobs:
   packer-build:
