@@ -6,7 +6,7 @@ packer {
     }
     googlecompute = {
       version = ">= 1.0.0, < 2.0.0"
-      source  = "github.com/hashicorp/googlecompute"
+      surce  = "github.com/hashicorp/googlecompute"
     }
   }
 }
