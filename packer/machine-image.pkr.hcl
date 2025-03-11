@@ -13,7 +13,7 @@ packer {
 
 variable "aws_profile" {
   type    = string
-  defalt = "default"
+  default = "default"
 }
 
 variable "aws_region" {
