@@ -6,14 +6,14 @@ packer {
     }
     googlecompute = {
       version = ">= 1.0.0, < 2.0.0"
-      surce  = "github.com/hashicorp/googlecompute"
+      source  = "github.com/hashicorp/googlecompute"
     }
   }
 }
 
 variable "aws_profile" {
   type    = string
-  default = "default"
+  default                   = "default"
 }
 
 variable "aws_region" {
