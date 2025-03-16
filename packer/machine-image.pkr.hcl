@@ -199,7 +199,7 @@ build {
   provisioner "shell" {
     inline = [
       "sed -i 's/\r$//' /tmp/setup.sh",
-      "sudo sh /tmp/setup.sh ${var.db_name} ${var.dev_db_name} ${var.test_db_name} ${var.db_user} ${var.db_password} ${var.app_group} ${var.app_user}",
+      "sudo sh /tmp/setup.sh ${var.app_group} ${var.app_user}",
       "sudo mv /tmp/app.service /etc/systemd/system/app.service",
       "sudo systemctl daemon-reload",
       "sudo systemctl enable app.service",
