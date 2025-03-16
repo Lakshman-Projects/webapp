@@ -17,6 +17,10 @@ const dbConfig = {
     url: process.env.DATABASE_URL,
     dialect: process.env.DATABASE_DIALECT,
   },
+  cloud: {
+    url: process.env.CLOUD_DATABASE_URL,
+    dialect: process.env.DATABASE_DIALECT,
+  },
 };
 
 // Export the constant

@@ -1,19 +1,19 @@
 #!/bin/bash
 
 # Check if all 7 arguments are provided
-if [ "$#" -ne 7 ]; then
-    echo "Usage: $0 <DB_NAME> <DEV_DB_NAME> <TEST_DB_NAME> <DB_USER> <DB_PASSWORD> <APP_GROUP> <APP_USER>"
+if [ "$#" -ne 7 ] && [ "$#" -ne 2 ]; then
+    echo "Usage: $0 <APP_GROUP> <APP_USER> <DB_NAME> <DEV_DB_NAME> <TEST_DB_NAME> <DB_USER> <DB_PASSWORD>"
     exit 1
 fi
 
 # Assign arguments to variables
-DB_NAME="$1"
-DEV_DB_NAME="$2"
-TEST_DB_NAME="$3"
-DB_USER="$4"
-DB_PASSWORD="$5"
-APP_GROUP="$6"
-APP_USER="$7"
+APP_GROUP="$1"
+APP_USER="$2"
+DB_NAME="$3"
+DEV_DB_NAME="$4"
+TEST_DB_NAME="$5"
+DB_USER="$6"
+DB_PASSWORD="$7"
 
 # Other Variables
 APP_ZIP="/tmp/lakshman_siva_*.zip"
@@ -27,32 +27,36 @@ echo "Updating package lists and upgrading packages..."
 sudo apt-get update -y
 sudo apt-get install -y unzip
 
-# Install PostgreSQL
-echo "Installing PostgreSQL..."
-sudo apt-get install -y postgresql postgresql-contrib
+if [ "$#" -eq 2 ]; then
+    echo "Skipping PostgreSQL installation and setup."
+else
+    # Install PostgreSQL
+    echo "Installing PostgreSQL..."
+    sudo apt-get install -y postgresql postgresql-contrib
 
-# Start and enable PostgreSQL service
-echo "Starting and enabling PostgreSQL service..."
-sudo systemctl start postgresql
-sudo systemctl enable postgresql
+    # Start and enable PostgreSQL service
+    echo "Starting and enabling PostgreSQL service..."
+    sudo systemctl start postgresql
+    sudo systemctl enable postgresql
 
-# Create the database and user in PostgreSQL
-echo "Creating database $DB_NAME and user $DB_USER..."
-sudo -u postgres psql -c "CREATE DATABASE $DB_NAME;"
-sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD '$DB_PASSWORD';"
-sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO $DB_USER;"
+    # Create the database and user in PostgreSQL
+    echo "Creating database $DB_NAME and user $DB_USER..."
+    sudo -u postgres psql -c "CREATE DATABASE $DB_NAME;"
+    sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD '$DB_PASSWORD';"
+    sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO $DB_USER;"
 
-echo "Creating database $DEV_DB_NAME and user $DB_USER..."
-sudo -u postgres psql -c "CREATE DATABASE $DEV_DB_NAME;"
-sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE $DEV_DB_NAME TO $DB_USER;"
+    echo "Creating database $DEV_DB_NAME and user $DB_USER..."
+    sudo -u postgres psql -c "CREATE DATABASE $DEV_DB_NAME;"
+    sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE $DEV_DB_NAME TO $DB_USER;"
 
-echo "Creating database $TEST_DB_NAME and user $DB_USER..."
-sudo -u postgres psql -c "CREATE DATABASE $TEST_DB_NAME;"
-sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE $TEST_DB_NAME TO $DB_USER;"
+    echo "Creating database $TEST_DB_NAME and user $DB_USER..."
+    sudo -u postgres psql -c "CREATE DATABASE $TEST_DB_NAME;"
+    sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE $TEST_DB_NAME TO $DB_USER;"
 
-# Update the password for the PostgreSQL user
-sudo sed -i 's/local   all             postgres                                peer/local   all             postgres                                md5/' /etc/postgresql/*/main/pg_hba.conf
-sudo systemctl restart postgresql
+    # Update the password for the PostgreSQL user
+    sudo sed -i 's/local   all             postgres                                peer/local   all             postgres                                md5/' /etc/postgresql/*/main/pg_hba.conf
+    sudo systemctl restart postgresql
+fi
 
 # Create a new Linux group for the application
 echo "Creating group $APP_GROUP..."
