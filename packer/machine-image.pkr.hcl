@@ -56,10 +56,6 @@ variable "gcp_zone" {
   default = "us-east1-d"
 }
 
-variable "disk_size" {
-  type    = number
-  default = 10
-}
 
 variable "disk_type" {
   type    = string
