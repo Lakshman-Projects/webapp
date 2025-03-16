@@ -26,3 +26,17 @@ export const getFileHandler = async (req, res) => {
         }
     }
 };
+
+export const deleteFileHandler = async (req, res) => {
+    try {
+        const fileId = req.params.id;
+        await deleteFile(fileId);
+        res.status(204).send();
+    } catch (error) {
+        if (error.message === "File not found") {
+            res.status(404).send();
+        } else {
+            res.status(500).send();
+        }
+    }
+};

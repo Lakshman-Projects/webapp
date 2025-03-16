@@ -51,3 +51,22 @@ export const getFile = async (fileId) => {
         throw error;
     }
 };
+
+export const deleteFile = async (fileId) => {
+    try {
+        const file = await File.findByPk(fileId);
+        if (!file) {
+            throw new Error("File not found");
+        }
+
+        const params = {
+            Bucket: process.env.S3_BUCKET,
+            Key: file.url.split("/").pop(),
+        };
+        await s3.deleteObject(params).promise();
+
+        await file.destroy();
+    } catch (error) {
+        throw error;
+    }
+};

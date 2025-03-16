@@ -6,9 +6,9 @@ const fileRouter = express.Router();
 fileRouter.post('/', {});
 
 // GET request to retrieve the file's s3 URL
-fileRouter.get('/:fileId', {});
+fileRouter.get('/:id', {});
 
 // DELETE request to delete a file
-fileRouter.delete('/:fileId', {});
+fileRouter.delete('/:id', {});
 
 export default fileRouter;
