@@ -22,6 +22,7 @@ jobs:
       APP_GROUP: ${{ secrets.APP_GROUP }}
       APP_USER: ${{ secrets.APP_USER }}
       ENV_FILE_CONTENT: ${{ secrets.ENV_FILE_CONTENT }}
+      ENV_CLOUD_FILE_CONTENT: ${{ secrets.ENV_CLOUD_FILE_CONTENT }}
       GCP_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
 
     steps:
@@ -52,7 +53,7 @@ jobs:
           sudo -u $APP_USER npm test
 
       - name: Create .env File
-        run: echo "$ENV_FILE_CONTENT" >> /tmp/.env
+        run: echo "$ENV_CLOUD_FILE_CONTENT" >> /tmp/.env
 
       - name: Create GCP Credentials File
         run: echo "$GCP_CREDENTIALS" >> /tmp/credentials.json
