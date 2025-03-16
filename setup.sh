@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Check if all 7 arguments are provided
-if [ "$#" -ne 7 ] && [ "$#" -ne 8 ]; then
+if [ "$#" -ne 7 ] && [ "$#" -ne 2 ]; then
     echo "Usage: $0 <APP_GROUP> <APP_USER> <DB_NAME> <DEV_DB_NAME> <TEST_DB_NAME> <DB_USER> <DB_PASSWORD>"
     exit 1
 fi
@@ -14,7 +14,6 @@ DEV_DB_NAME="$4"
 TEST_DB_NAME="$5"
 DB_USER="$6"
 DB_PASSWORD="$7"
-DB_HOST="$8"
 
 # Other Variables
 APP_ZIP="/tmp/lakshman_siva_*.zip"
@@ -28,16 +27,8 @@ echo "Updating package lists and upgrading packages..."
 sudo apt-get update -y
 sudo apt-get install -y unzip
 
-if [ "$#" -eq 8 ]; then
-    echo "Skipping PostgreSQL installation."
-    
-    sudo PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -U $DB_USER -p 5432 -c "CREATE DATABASE $DB_NAME;"
-    sudo PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -U $DB_USER -p 5432 -c "CREATE DATABASE $DEV_DB_NAME;"
-    sudo PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -U $DB_USER -p 5432 -c "CREATE DATABASE $TEST_DB_NAME;"
-
-    sudo PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -U $DB_USER -p 5432 -c "GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO $DB_USER;"
-    sudo PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -U $DB_USER -p 5432 -c "GRANT ALL PRIVILEGES ON DATABASE $DEV_DB_NAME TO $DB_USER;"
-    sudo PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -U $DB_USER -p 5432 -c "GRANT ALL PRIVILEGES ON DATABASE $TEST_DB_NAME TO $DB_USER;"
+if [ "$#" -eq 2 ]; then
+    echo "Skipping PostgreSQL installation and setup."
 else
     # Install PostgreSQL
     echo "Installing PostgreSQL..."
