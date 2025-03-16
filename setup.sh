@@ -15,6 +15,14 @@ TEST_DB_NAME="$5"
 DB_USER="$6"
 DB_PASSWORD="$7"
 
+echo "APP_GROUP: $APP_GROUP"
+echo "APP_USER: $APP_USER"
+echo "DB_NAME: $DB_NAME"
+echo "DEV_DB_NAME: $DEV_DB_NAME"
+echo "TEST_DB_NAME: $TEST_DB_NAME"
+echo "DB_USER: $DB_USER"
+echo "DB_PASSWORD: $DB_PASSWORD"
+
 # Other Variables
 APP_ZIP="/tmp/lakshman_siva_*.zip"
 APP_DIR="/opt/csye6225"
