@@ -38,8 +38,8 @@ jobs:
       - name: Run Setup Script
         run: |
           sudo -E sh setup.sh \
-            "$DB_NAME" "$DEV_DB_NAME" "$TEST_DB_NAME" \
-            "$DB_USER" "$DB_PASSWORD" "$APP_GROUP" "$APP_USER"
+            "$APP_GROUP" "$APP_USER" "$DB_NAME" "$DEV_DB_NAME" \
+            "$DB_USER" "$DB_PASSWORD" "$TEST_DB_NAME" 
 
       - name: Navigate to webapp directory and Run Tests
         run: |
