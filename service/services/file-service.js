@@ -34,3 +34,20 @@ export const uploadFile = async (file) => {
         throw error;
     }
 };
+
+export const getFile = async (fileId) => {
+    try {
+        const file = await File.findByPk(fileId);
+        if (!file) {
+            throw new Error("File not found");
+        }
+        return {
+            file_name: file.fileName,
+            id: file.id,
+            url: file.url,
+            upload_date: file.createdAt.toISOString().split("T")[0],
+        };
+    } catch (error) {
+        throw error;
+    }
+};

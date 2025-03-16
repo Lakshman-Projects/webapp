@@ -1,4 +1,5 @@
 import { Model } from "sequelize";
+import { v4 as uuid } from "uuid";
 
 export default (sequelize, DataTypes) => {
     class File extends Model {
@@ -9,9 +10,9 @@ export default (sequelize, DataTypes) => {
     File.init(
         {
             id: {
-                type: DataTypes.INTEGER,
+                type: DataTypes.UUID,
+                defaultValue: () => uuid(),
                 primaryKey: true,
-                autoIncrement: true,
             },
             fileName: {
                 type: DataTypes.STRING,
