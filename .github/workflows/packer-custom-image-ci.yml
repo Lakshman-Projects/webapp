@@ -44,7 +44,7 @@ jobs:
         run: |
           sudo -E sh setup.sh \
             "$APP_GROUP" "$APP_USER" "$DB_NAME" "$DEV_DB_NAME" \
-            "$DB_USER" "$DB_PASSWORD" "$TEST_DB_NAME" 
+            "$TEST_DB_NAME" "$DB_USER" "$DB_PASSWORD" 
 
       - name: Navigate to webapp directory and Run Tests
         run: |
