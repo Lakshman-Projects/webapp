@@ -8,9 +8,16 @@ const upload = multer({
         if (allowedTypes.includes(file.mimetype)) {
             cb(null, true);
         } else {
-            cb(new Error('Invalid file type. Only JPEG, PNG, and GIF are allowed.'), false);
+            cb(new Error('Invalid file type. Only JPEG, JPG, and PNG are allowed.'), false);
         }
     }
 });
 
-export const uploadMiddleware = upload.single("profilePic");
+export const uploadMiddleware = (req, res, next) => {
+    upload.single('profilePic')(req, res, (err) => {
+        if (err) {
+            return res.status(400).send();
+        }
+        next();
+    });
+};
