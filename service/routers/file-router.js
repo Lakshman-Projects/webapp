@@ -14,4 +14,17 @@ fileRouter.get('/:id', validateUUID, getFileHandler);
 // DELETE request to delete a file
 fileRouter.delete('/:id', validateUUID, deleteFileHandler);
 
+// Other requests
+fileRouter.get('/', (req, res) => {
+    res.status(400).send();
+});
+
+fileRouter.delete('/', (req, res) => {
+    res.status(400).send();
+});
+
+fileRouter.all('*', (req, res) => {
+    res.status(405).send();
+});
+
 export default fileRouter;

@@ -5,7 +5,7 @@ import db from "./models/index.js";
 import logger from "./middlewares/logger.js";
 import initializeRouters from "./routers/index.js";
 import headers from "./middlewares/header.js";
-import { apiMiddleware, errorHandler } from "./middlewares/responseHandler.js";
+import { errorHandler } from "./middlewares/responseHandler.js";
 
 dotenv.config();
 
@@ -15,7 +15,6 @@ const initialize = async (app) => {
     app.use(express.urlencoded({ limit: "5mb", extended: true })); // Parse URL-encoded bodies
     app.use(logger); // Log HTTP requests
     app.use(headers); // Set headers
-    app.use(apiMiddleware); // API middleware
     app.use(errorHandler); // Error handler
 
     // Set up the database
