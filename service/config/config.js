@@ -1,6 +1,4 @@
 import dotenv from 'dotenv';
-
-// Load environment variables from .env file
 dotenv.config();
 
 // Initialize the configuration object
@@ -20,8 +18,13 @@ const dbConfig = {
   cloud: {
     url: process.env.CLOUD_DATABASE_URL,
     dialect: process.env.DATABASE_DIALECT,
+    dialectOptions: {
+      ssl: {
+        require: true, // Enforce SSL
+        rejectUnauthorized: false
+      }
+    },
   },
 };
 
-// Export the constant
 export default dbConfig;

@@ -1,4 +1,4 @@
-import { uploadFile, getFile } from "../services/file-service.js";
+import { uploadFile, getFile, deleteFile } from "../services/file-service.js";
 
 export const uploadFileHandler = async (req, res) => {
     try {

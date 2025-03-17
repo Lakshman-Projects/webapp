@@ -1,11 +1,12 @@
 import express from 'express';
 import validateUUID from '../middlewares/idChecker.js';
+import { uploadMiddleware } from '../middlewares/upload.js';
 import { uploadFileHandler, getFileHandler, deleteFileHandler } from '../controllers/file-controller.js';
 
 const fileRouter = express.Router();
 
 // POST request to upload a file
-fileRouter.post('/', uploadFileHandler);
+fileRouter.post('/', uploadMiddleware, uploadFileHandler);
 
 // GET request to retrieve the file's s3 URL
 fileRouter.get('/:id', validateUUID, getFileHandler);
