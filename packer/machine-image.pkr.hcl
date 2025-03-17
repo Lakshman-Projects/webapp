@@ -201,9 +201,9 @@ build {
       "sed -i 's/\r$//' /tmp/setup.sh",
 
       # Conditional logic for AWS and GCP
-      "if [[ ${source.name} == 'my-aws-machine-image' ]]; then",
+      "if [ \"${source.name}\" = 'my-aws-machine-image' ]; then",
       "sudo sh /tmp/setup.sh ${var.app_group} ${var.app_user}",
-      "elif [[ ${source.name} == 'my-gcp-machine-image' ]]; then",
+      "elif [ \"${source.name}\" = 'my-gcp-machine-image' ]; then",
       "sudo sh /tmp/setup.sh ${var.app_group} ${var.app_user} ${var.db_name} ${var.dev_db_name} ${var.test_db_name} ${var.db_user} ${var.db_password}",
       "fi",
 
