@@ -2,7 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import db from "./models/index.js";
 
-import { logger, morganMiddleware } from "./middlewares/logger.js";
+import { logger, morganMiddleware, attachLogData } from "./middlewares/logger.js";
 import initializeRouters from "./routers/index.js";
 import headers from "./middlewares/header.js";
 import { errorHandler } from "./middlewares/responseHandler.js";
@@ -13,9 +13,9 @@ const initialize = async (app) => {
     // Set up middlewares
     app.use(express.json({ limit: "1mb" })); // Parse JSON bodies
     app.use(express.urlencoded({ limit: "5mb", extended: true })); // Parse URL-encoded bodies
+    app.use(attachLogData); // Attach log data to the request
     app.use(morganMiddleware); // Log HTTP requests
     app.use(headers); // Set headers
-    app.use(errorHandler); // Error handler
 
     // Set up the database
     const setupDb = async () => {
@@ -23,8 +23,11 @@ const initialize = async (app) => {
         try {
             const database = await db;
             await database.sequelize.authenticate(); // Authenticate once db is ready
+
+            logger.info("Database connected successfully.");
             console.log("Database connected successfully.");
         } catch (error) {
+            logger.error("Unable to connect to the database:", error);
             console.error("Unable to connect to the database:", error);
         }
 
@@ -32,8 +35,11 @@ const initialize = async (app) => {
         try {
             const database = await db;
             await database.sequelize.sync(); // Sync once db is ready
+
+            logger.info("Database synchronized successfully.");
             console.log("Database synchronized successfully.");
         } catch (error) {
+            logger.error("Unable to sync the database:", error);
             console.error("Unable to sync the database:", error);
         }
     };
@@ -42,6 +48,8 @@ const initialize = async (app) => {
 
     // Initialize the routers
     initializeRouters(app);
+
+    app.use(errorHandler); // Error handler
 };
 
 export default initialize;

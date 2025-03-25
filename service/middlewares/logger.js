@@ -10,15 +10,25 @@ if (!fs.existsSync(logsDirectory)) {
 }
 
 // Custom log format function
-const logFormat = winston.format.printf(({ timestamp, level, message }) => {
-    return `${timestamp} [${level.toUpperCase()}]: ${message}`;
+const logFormat = winston.format.printf(({ timestamp, level, message, method, url, status, responseTime }) => {
+    let logMessage = `${timestamp} [${level.toUpperCase()}]:`;
+    if (method && url) {
+        logMessage += ` ${method} ${url} ${status}`;
+    }
+    if (message) {
+        logMessage += ` - ${message}`;
+    }
+    if (responseTime) {
+        logMessage += ` (${responseTime} ms)`;
+    }
+    return logMessage;
 });
 
-// Create a Winston logger instance (with timestamp and log level)
+// Create a Winston logger instance
 const logger = winston.createLogger({
     level: "info",
     format: winston.format.combine(
-        winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+        winston.format.timestamp({ format: () => new Date().toISOString() }),
         logFormat
     ),
     transports: [
@@ -35,16 +45,38 @@ const logger = winston.createLogger({
     ],
 });
 
-// Custom Morgan log format
-const morganFormat = ":date[iso] :method :url :status :res[content-length] - :response-time ms";
+// Middleware to attach log data to the request object
+const attachLogData = (req, res, next) => {
+    req.logData = {};
+    const originalSend = res.send;
+    res.send = function (body) {
+        req.logData.status = res.statusCode;
+        originalSend.call(this, body);
+    };
+    next();
+};
 
-// Morgan middleware setup to log requests in custom format (standardized) to the file and console
-const morganMiddleware = morgan(morganFormat, {
-    stream: {
-        write: (message) => {
-            logger.info(`HTTP REQUEST: ${message.trim()}`);
-        },
-    },
-});
+// Custom Morgan middleware to log combined data after response
+const morganMiddleware = morgan((tokens, req, res) => {
+    const logData = {
+        method: tokens.method(req, res),
+        url: tokens.url(req, res),
+        status: tokens.status(req, res),
+        responseTime: tokens["response-time"](req, res),
+        message: req.logData.message || "Request processed",
+    };
 
-export { logger, morganMiddleware };
+    const logLevel = req.logData.level || (parseInt(logData.status) >= 500 ? "error" : (parseInt(logData.status) >= 400 ? "warn" : "info"));
+    logger[logLevel]("", logData);
+
+    return null; // Morgan won't log separately
+}, { immediate: false });
+
+// Helper function to log with request context
+const logWithRequest = (req, level, message) => {
+    req.logData = req.logData || {};
+    req.logData.message = message;
+    req.logData.level = level;
+};
+
+export { logger, morganMiddleware, attachLogData, logWithRequest };
