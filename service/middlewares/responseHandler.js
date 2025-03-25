@@ -4,7 +4,6 @@ const apiMiddleware = (req, res, next) => {
     // Only GET is allowed
     if (req.method !== "GET") {
         logWithRequest(req, "warn", `Method not allowed: ${req.method}`);
-        console.log(req.logData);
         return res.status(405).send();
     }
 
@@ -23,14 +22,6 @@ const apiMiddleware = (req, res, next) => {
     next();
 };
 
-const apiFileMiddleware = (req, res, next) => {
-    if (req.method === "HEAD") {
-        logWithRequest(req, "warn", `Method not allowed: ${req.method}`);
-        return res.status(405).send();
-    }
-    next();
-}
-
 // No 500 Internal Server Errors
 const errorHandler = (err, req, res, next) => {
     logWithRequest(req, "error", err.message);
@@ -38,4 +29,4 @@ const errorHandler = (err, req, res, next) => {
     res.status(503).send();
 };
 
-export { apiMiddleware, apiFileMiddleware, errorHandler };
+export { apiMiddleware, errorHandler };
