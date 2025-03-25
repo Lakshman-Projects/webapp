@@ -2,7 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import db from "./models/index.js";
 
-import logger from "./middlewares/logger.js";
+import { logger, morganMiddleware } from "./middlewares/logger.js";
 import initializeRouters from "./routers/index.js";
 import headers from "./middlewares/header.js";
 import { errorHandler } from "./middlewares/responseHandler.js";
@@ -13,7 +13,7 @@ const initialize = async (app) => {
     // Set up middlewares
     app.use(express.json({ limit: "1mb" })); // Parse JSON bodies
     app.use(express.urlencoded({ limit: "5mb", extended: true })); // Parse URL-encoded bodies
-    app.use(logger); // Log HTTP requests
+    app.use(morganMiddleware); // Log HTTP requests
     app.use(headers); // Set headers
     app.use(errorHandler); // Error handler
 
