@@ -196,6 +196,12 @@ build {
     destination = "/tmp/app.service"
   }
 
+  provisioner "file" {
+    source      = "packer/amazon-cloudwatch-agent.json"
+    destination = "/tmp/amazon-cloudwatch-agent.json"
+    only        = ["amazon-ebs.my-aws-machine-image"]
+  }
+
   provisioner "shell" {
     inline = [
       "sed -i 's/\r$//' /tmp/setup.sh",
@@ -203,6 +209,12 @@ build {
       # Conditional logic for AWS and GCP
       "if [ \"${source.name}\" = 'my-aws-machine-image' ]; then",
       "sudo sh /tmp/setup.sh ${var.app_group} ${var.app_user}",
+      "wget https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb",
+      "sudo dpkg -i amazon-cloudwatch-agent.deb",
+      "sudo systemctl enable amazon-cloudwatch-agent",
+      "sudo mkdir -p /opt/aws/amazon-cloudwatch-agent/etc",
+      "sudo mv /tmp/amazon-cloudwatch-agent.json /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json",
+
       "elif [ \"${source.name}\" = 'my-gcp-machine-image' ]; then",
       "sudo sh /tmp/setup.sh ${var.app_group} ${var.app_user} ${var.db_name} ${var.dev_db_name} ${var.test_db_name} ${var.db_user} ${var.db_password}",
       "fi",
