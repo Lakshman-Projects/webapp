@@ -25,7 +25,7 @@ const apiMiddleware = (req, res, next) => {
 // No 500 Internal Server Errors
 const errorHandler = (err, req, res, next) => {
     req.logData = req.logData || { message: null, level: null };
-    logWithRequest(req, "error", err.message || "Unhandled server error");
+    logWithRequest(req, "error", `${String(err.message)}\n${err.stack}` || "Unhandled server error");
     res.status(503);
     if (!res.headersSent) {
         res.send();

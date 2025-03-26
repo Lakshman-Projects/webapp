@@ -11,7 +11,7 @@ export const uploadFileHandler = async (req, res) => {
         const fileData = await uploadFile(req.file);
         res.status(201).json(fileData);
     } catch (error) {
-        logWithRequest(req, "error", error.message || "Unable to upload file");
+        logWithRequest(req, "error", `${String(error.message)}\n${error.stack}` || "Unable to upload file");
         res.status(503).send();
     }
 };
@@ -26,7 +26,7 @@ export const getFileHandler = async (req, res) => {
             logWithRequest(req, "warn", "File not found for the given ID");
             res.status(404).send();
         } else {
-            logWithRequest(req, "error", error.message || "Unable to get file");
+            logWithRequest(req, "error", `${String(error.message)}\n${error.stack}` || "Unable to get file");
             res.status(503).send();
         }
     }
@@ -42,7 +42,7 @@ export const deleteFileHandler = async (req, res) => {
             logWithRequest(req, "warn", "File not found for the given ID");
             res.status(404).send();
         } else {
-            logWithRequest(req, "error", error.message || "Unable to delete file");
+            logWithRequest(req, "error", `${String(error.message)}\n${error.stack}` || "Unable to delete file");
             res.status(503).send();
         }
     }
