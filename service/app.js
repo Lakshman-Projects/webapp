@@ -5,7 +5,6 @@ import db from "./models/index.js";
 import { logger, morganMiddleware, attachLogData } from "./middlewares/logger.js";
 import initializeRouters from "./routers/index.js";
 import headers from "./middlewares/header.js";
-import { measureApiMetrics } from "./middlewares/statd-metrics.js";
 import { errorHandler } from "./middlewares/responseHandler.js";
 
 dotenv.config();
@@ -16,7 +15,6 @@ const initialize = async (app) => {
     app.use(express.urlencoded({ limit: "5mb", extended: true })); // Parse URL-encoded bodies
     app.use(attachLogData); // Attach log data to the request
     app.use(morganMiddleware); // Log HTTP requests
-    app.use(measureApiMetrics); // Measure API metrics
     app.use(headers); // Set headers
 
     // Set up the database

@@ -2,6 +2,7 @@ import express from 'express';
 import validateUUID from '../middlewares/idChecker.js';
 import { uploadMiddleware } from '../middlewares/upload.js';
 import { logWithRequest } from '../middlewares/logger.js';
+import { measureApiMetrics } from '../middlewares/statd-metrics.js';
 import { uploadFileHandler, getFileHandler, deleteFileHandler } from '../controllers/file-controller.js';
 
 const fileRouter = express.Router();
@@ -18,13 +19,13 @@ fileRouter.head('/:id', (req, res) => {
 });
 
 // POST request to upload a file
-fileRouter.post('/', uploadMiddleware, uploadFileHandler);
+fileRouter.post('/', measureApiMetrics, uploadMiddleware, uploadFileHandler);
 
 // GET request to retrieve the file's s3 URL
-fileRouter.get('/:id', validateUUID, getFileHandler);
+fileRouter.get('/:id', measureApiMetrics, validateUUID, getFileHandler);
 
 // DELETE request to delete a file
-fileRouter.delete('/:id', validateUUID, deleteFileHandler);
+fileRouter.delete('/:id', measureApiMetrics, validateUUID, deleteFileHandler);
 
 // Other requests
 fileRouter.get('/', (req, res) => {
