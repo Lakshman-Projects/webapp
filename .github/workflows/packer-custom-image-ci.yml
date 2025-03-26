@@ -105,11 +105,3 @@ jobs:
             -var "app_group=${{ secrets.APP_GROUP }}" \
             -var "app_user=${{ secrets.APP_USER }}" \
             packer/machine-image.pkr.hcl
-
-      - name: Share the image with other GCP projects
-        run: |
-          IMAGE_NAME=$(gcloud compute images list --project ${{ secrets.GCP_PROJECT_ID }} --sort-by="~creationTimestamp" --filter="name~^csye6225-" --format="value(NAME)" | head -n1)
-          gcloud compute images add-iam-policy-binding $IMAGE_NAME \
-            --project ${{ secrets.GCP_PROJECT_ID }} \
-            --member=serviceAccount:${{ secrets.GCP_SHARED_ACCOUNT_EMAIL }} \
-            --role=roles/compute.imageUser
