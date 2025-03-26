@@ -7,7 +7,13 @@ const statsd = new StatsD({ host: 'localhost', port: 8125 });
 // Middleware to measure API call duration and count
 const measureApiMetrics = (req, res, next) => {
     const start = performance.now();
-    const apiName = req.path.replace(/\//g, '_') || 'root';
+    let apiPath = req.originalUrl;
+    if (req.params && req.params.id) {
+        apiPath = apiPath.replace("/" + req.params.id, '');
+    }
+
+    const apiName = req.method + apiPath.replace(/\//g, '_') || 'root';
+    console.log(`API call: ${apiName}`);
 
     res.on('finish', () => {
         const duration = performance.now() - start;
@@ -50,4 +56,4 @@ const measureS3Call = async (s3Fn, operationName = 'unknown') => {
     }
 };
 
-export { measureApiMetrics, measureDbQuery, measureS3Call };
+export { statsd, measureApiMetrics, measureDbQuery, measureS3Call };

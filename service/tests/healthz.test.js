@@ -1,10 +1,10 @@
 import request from 'supertest';
 import express from 'express';
 import initialize from "../app.js";
+import { statsd } from '../middlewares/statd-metrics.js';
 import { logger } from '../middlewares/logger.js';
 
 let app;
-let server;
 const startTime = Date.now();
 
 beforeAll(async () => {
@@ -19,10 +19,10 @@ afterAll(async () => {
     const duration = (endTime - startTime) / 1000;
 
     logger.info(`Integration test suite completed in ${duration} seconds`);
-    
-    setInterval(() => {
-        process.exit(0);
-    }, 2000);
+
+    if (statsd && statsd.socket && typeof statsd.socket.unref === 'function') {
+        statsd.socket.unref();
+    }
 });
 
 describe('GET /healthz', () => {

@@ -4,6 +4,7 @@ import { logWithRequest } from "../middlewares/logger.js";
 export const uploadFileHandler = async (req, res) => {
     try {
         if (!req.file) {
+            logWithRequest(req, "warn", "No file uploaded");
             return res.status(400).send();
         }
 
