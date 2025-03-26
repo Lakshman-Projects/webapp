@@ -3,7 +3,6 @@ import express from 'express';
 import initialize from "../app.js";
 import { logger } from '../middlewares/logger.js';
 
-
 let app;
 let server;
 const startTime = Date.now();
@@ -11,9 +10,8 @@ const startTime = Date.now();
 beforeAll(async () => {
     logger.info("Initializing the integration test suite");
 
-    app = express();
+    app = express();    
     await initialize(app);
-    server = app.listen(8080);
 });
 
 afterAll(async () => {
@@ -22,7 +20,9 @@ afterAll(async () => {
 
     logger.info(`Integration test suite completed in ${duration} seconds`);
     
-    server.close();
+    setInterval(() => {
+        process.exit(0);
+    }, 2000);
 });
 
 describe('GET /healthz', () => {
