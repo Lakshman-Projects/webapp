@@ -5,6 +5,7 @@ import { logger } from '../middlewares/logger.js';
 
 
 let app;
+let server;
 const startTime = Date.now();
 
 beforeAll(async () => {
@@ -12,6 +13,7 @@ beforeAll(async () => {
 
     app = express();
     await initialize(app);
+    server = app.listen(8080);
 });
 
 afterAll(async () => {
@@ -19,6 +21,8 @@ afterAll(async () => {
     const duration = (endTime - startTime) / 1000;
 
     logger.info(`Integration test suite completed in ${duration} seconds`);
+    
+    server.close();
 });
 
 describe('GET /healthz', () => {
