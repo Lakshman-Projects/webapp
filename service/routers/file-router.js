@@ -1,9 +1,21 @@
 import express from 'express';
 import validateUUID from '../middlewares/idChecker.js';
 import { uploadMiddleware } from '../middlewares/upload.js';
+import { logWithRequest } from '../middlewares/logger.js';
 import { uploadFileHandler, getFileHandler, deleteFileHandler } from '../controllers/file-controller.js';
 
 const fileRouter = express.Router();
+
+// HEAD request
+fileRouter.head('/', (req, res) => {
+    logWithRequest(req, "warn", `Method not allowed: ${req.method}`);
+    res.status(405).send();
+});
+
+fileRouter.head('/:id', (req, res) => {
+    logWithRequest(req, "warn", `Method not allowed: ${req.method}`);
+    res.status(405).send();
+});
 
 // POST request to upload a file
 fileRouter.post('/', uploadMiddleware, uploadFileHandler);
@@ -16,14 +28,17 @@ fileRouter.delete('/:id', validateUUID, deleteFileHandler);
 
 // Other requests
 fileRouter.get('/', (req, res) => {
+    logWithRequest(req, "warn", "File ID not provided");
     res.status(400).send();
 });
 
 fileRouter.delete('/', (req, res) => {
+    logWithRequest(req, "warn", "File ID not provided");
     res.status(400).send();
 });
 
 fileRouter.all('*', (req, res) => {
+    logWithRequest(req, "warn", `Method not allowed: ${req.method}`);
     res.status(405).send();
 });
 

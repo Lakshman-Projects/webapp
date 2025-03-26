@@ -1,5 +1,6 @@
 import db from "../models/index.js";
 import { s3 } from "../config/aws.js";
+import { measureDbQuery, measureS3Call } from "../middlewares/statd-metrics.js";
 
 const { File } = await db;
 
@@ -15,14 +16,14 @@ export const uploadFile = async (file) => {
             ContentType: mimetype,
         };
 
-        const s3Response = await s3.upload(params).promise();
+        const s3Response = await measureS3Call(() => s3.upload(params).promise(), 'upload_file');
 
-        const fileRecord = await File.create({
+        const fileRecord = await measureDbQuery(() => File.create({
             fileName: originalname,
             url: s3Response.Location,
             size,
             mimeType: mimetype,
-        });
+        }), 'create_file_record');
 
         return {
             file_name: fileRecord.fileName,
@@ -37,7 +38,7 @@ export const uploadFile = async (file) => {
 
 export const getFile = async (fileId) => {
     try {
-        const file = await File.findByPk(fileId);
+        const file = await measureDbQuery(() => File.findByPk(fileId), 'get_file_record');
         if (!file) {
             throw new Error("File not found");
         }
@@ -54,7 +55,7 @@ export const getFile = async (fileId) => {
 
 export const deleteFile = async (fileId) => {
     try {
-        const file = await File.findByPk(fileId);
+        const file = await measureDbQuery(() => File.findByPk(fileId), 'get_file_record');
         if (!file) {
             throw new Error("File not found");
         }
@@ -63,9 +64,9 @@ export const deleteFile = async (fileId) => {
             Bucket: process.env.S3_BUCKET,
             Key: file.url.split("/").pop(),
         };
-        await s3.deleteObject(params).promise();
+        await measureS3Call(() => s3.deleteObject(params).promise(), 'delete_file');
 
-        await file.destroy();
+        await measureDbQuery(() => file.destroy(), 'delete_file_record');
     } catch (error) {
         throw error;
     }

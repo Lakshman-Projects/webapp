@@ -1,4 +1,5 @@
 import multer from "multer";
+import { logWithRequest } from "./logger.js";
 
 const upload = multer({
     storage: multer.memoryStorage(),
@@ -8,6 +9,7 @@ const upload = multer({
         if (allowedTypes.includes(file.mimetype)) {
             cb(null, true);
         } else {
+            logWithRequest(req, 'error', `Invalid file type[${file.mimetype}]. Only JPEG, JPG, and PNG are allowed.`);
             cb(new Error('Invalid file type. Only JPEG, JPG, and PNG are allowed.'), false);
         }
     }
