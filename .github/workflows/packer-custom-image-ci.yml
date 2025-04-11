@@ -137,10 +137,6 @@ jobs:
             --output text)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Echo Launch Template Version
-        run: |
-          echo "Using LT version: ${{ steps.get-lt-version.outputs.version }}"
-
       - name: Set Latest Version as Default
         run: |
           aws ec2 modify-launch-template \
