@@ -16,6 +16,16 @@ variable "aws_profile" {
   default = "default"
 }
 
+variable "aws_access_key" {
+  type    = string
+  default = "xxxxxxxxxxxxxxxxxxxx"
+}
+
+variable "aws_secret_key" {
+  type    = string
+  default = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+}
+
 variable "aws_region" {
   type    = string
   default = "us-east-1"
@@ -218,10 +228,17 @@ build {
       "sudo sh /tmp/setup.sh ${var.app_group} ${var.app_user} ${var.db_name} ${var.dev_db_name} ${var.test_db_name} ${var.db_user} ${var.db_password}",
       "fi",
 
+      "sudo apt-get install -y awscli",
+      "aws configure set aws_access_key_id ${var.aws_access_key}",
+      "aws configure set aws_secret_access_key ${var.aws_secret_key}",
+      "aws configure set region ${var.aws_region}",
+
       "sudo mv /tmp/app.service /etc/systemd/system/app.service",
       "sudo systemctl daemon-reload",
       "sudo systemctl enable app.service",
       "sudo systemctl start app.service",
+
+      "sudo apt-get install -y awscli",
     ]
   }
 }
