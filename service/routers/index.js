@@ -6,7 +6,7 @@ const initializeRouters = (app) => {
     app.use("/healthz", apiMiddleware, healthzRouter);
     app.use("/v1/file", fileRouter);
 
-    app.use("/cicds", apiMiddleware, healthzRouter);
+    app.use("/lakshman", apiMiddleware, healthzRouter);
 };
 
 export default initializeRouters;
